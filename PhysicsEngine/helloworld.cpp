@@ -328,6 +328,11 @@ int main(int argc, char** argv)
 	BodyCreationSettings sphere_settings(new SphereShape(0.5f), RVec3(0.0_r, 2.0_r, 0.0_r), Quat::sIdentity(), EMotionType::Dynamic, Layers::MOVING);
 	BodyID sphere_id = body_interface.CreateAndAddBody(sphere_settings, EActivation::Activate);
 
+	// Create cube
+	BodyCreationSettings cube_settings(new BoxShape(Vec3Arg(0.5f, 0.5f, 0.5f)), RVec3(0.0_r, 5.0_r, 0.0_r), Quat::sIdentity(), EMotionType::Dynamic, Layers::MOVING);
+	BodyID cube_id = body_interface.CreateAndAddBody(cube_settings, EActivation::Activate);
+	body_interface.SetLinearVelocity(cube_id, Vec3(0.0f, -5.0f, 0.0f));
+
 	// Now you can interact with the dynamic body, in this case we're going to give it a velocity.
 	// (note that if we had used CreateBody then we could have set the velocity straight on the body before adding it to the physics system)
 	body_interface.SetLinearVelocity(sphere_id, Vec3(0.0f, -5.0f, 0.0f));
@@ -350,7 +355,11 @@ int main(int argc, char** argv)
 		// Output current position and velocity of the sphere
 		RVec3 position = body_interface.GetCenterOfMassPosition(sphere_id);
 		Vec3 velocity = body_interface.GetLinearVelocity(sphere_id);
-		cout << "Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
+		cout << "Sphere: Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.GetZ() << ")" << endl;
+
+		RVec3 box_pos = body_interface.GetCenterOfMassPosition(cube_id);
+		Vec3 box_velocity = body_interface.GetLinearVelocity(cube_id);
+		cout << "Box   : Step " << step << ": Position = (" << box_pos.GetX() << ", " << box_pos.GetY() << ", " << box_pos.GetZ() << "), Velocity = (" << box_velocity.GetX() << ", " << box_velocity.GetY() << ", " << box_velocity.GetZ() << ")" << endl;
 
 		// If you take larger steps than 1 / 60th of a second you need to do multiple collision steps in order to keep the simulation stable. Do 1 collision step per 1 / 60th of a second (round up).
 		const int cCollisionSteps = 1;
