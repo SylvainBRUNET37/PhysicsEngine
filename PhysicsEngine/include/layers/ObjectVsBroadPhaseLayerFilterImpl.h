@@ -1,0 +1,28 @@
+#ifndef OBJECT_VS_BROAD_PHASE_LAYER_FILTER_IMPL_H
+#define OBJECT_VS_BROAD_PHASE_LAYER_FILTER_IMPL_H
+
+#include <Jolt/Core/IssueReporting.h>
+#include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
+
+#include "BroadPhaseLayers.h"
+#include "Layers.h"
+
+class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
+{
+public:
+	[[nodiscard]] bool ShouldCollide(const JPH::ObjectLayer inLayer1, const JPH::BroadPhaseLayer inLayer2) const override
+	{
+		switch (inLayer1)
+		{
+		case Layers::NON_MOVING:
+			return inLayer2 == BroadPhaseLayers::MOVING;
+		case Layers::MOVING:
+			return true;
+		default:
+			JPH_ASSERT(false);
+			return false;
+		}
+	}
+};
+
+#endif
