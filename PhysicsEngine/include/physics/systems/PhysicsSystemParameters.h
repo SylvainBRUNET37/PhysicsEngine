@@ -3,8 +3,8 @@
 
 #include <type_traits>
 
-template<typename T, typename Base>
-concept DerivedFrom = std::is_base_of_v<Base, T>;
+template<typename Derived, typename BaseClass>
+concept DerivedFrom = std::is_base_of_v<BaseClass, Derived>;
 
 template
 <

@@ -9,7 +9,7 @@
 #include <thread>
 #include <Jolt/Physics/PhysicsSettings.h>
 
-#include "utils/Utils.h"
+#include "physics/utils/JoltUtils.h"
 
 class JoltSystem
 {
@@ -46,8 +46,8 @@ private:
 	{
 		JPH::RegisterDefaultAllocator();
 
-		JPH::Trace = Utils::TraceImpl;
-		JPH_IF_ENABLE_ASSERTS(JPH::AssertFailed = Utils::AssertFailedImpl;)
+		JPH::Trace = JoltUtils::TraceImpl;
+		JPH_IF_ENABLE_ASSERTS(JPH::AssertFailed = JoltUtils::AssertFailedImpl;)
 
 		JPH::Factory::sInstance = new JPH::Factory();
 

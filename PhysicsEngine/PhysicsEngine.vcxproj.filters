@@ -21,45 +21,60 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\PhysicsDebugRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ContactListenerLogger.h">
+    <ClInclude Include="include\physics\utils\ContactListenerLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\SphereFactory.h">
+    <ClInclude Include="include\physics\shapes\SphereFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BodyActivationListenerLogger.h">
+    <ClInclude Include="include\physics\utils\BodyActivationListenerLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\layers\ObjectVsBroadPhaseLayerFilterImpl.h">
+    <ClInclude Include="include\physics\layers\ObjectVsBroadPhaseLayerFilterImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\layers\BroadPhaseLayers.h">
+    <ClInclude Include="include\physics\layers\BroadPhaseLayers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\layers\Layers.h">
+    <ClInclude Include="include\physics\layers\Layers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\layers\ObjectLayerPairFilterImpl.h">
+    <ClInclude Include="include\physics\layers\ObjectLayerPairFilterImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\layers\BroadPhaseLayerInterfaceImpl.h">
+    <ClInclude Include="include\physics\layers\BroadPhaseLayerInterfaceImpl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\utils\Utils.h">
+    <ClInclude Include="include\physics\utils\JoltUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\systems\JoltSystem.h">
+    <ClInclude Include="include\physics\systems\JoltSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\systems\PhysicsSystemWrapper.h">
+    <ClInclude Include="include\physics\systems\PhysicsSystemWrapper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\systems\PhysicsSystemParameters.h">
+    <ClInclude Include="include\physics\systems\PhysicsSystemParameters.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PhysicsDebugRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rendering\application\WindowsApplication.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\systems\MainEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

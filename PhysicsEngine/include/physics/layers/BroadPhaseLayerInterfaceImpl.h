@@ -6,7 +6,7 @@
 #include "BroadPhaseLayers.h"
 #include "Layers.h"
 
-class BroadPhaseLayerInterfaceImpl final : public JPH::BroadPhaseLayerInterface
+class BroadPhaseLayerInterfaceImpl : public JPH::BroadPhaseLayerInterface
 {
 public:
 	BroadPhaseLayerInterfaceImpl()

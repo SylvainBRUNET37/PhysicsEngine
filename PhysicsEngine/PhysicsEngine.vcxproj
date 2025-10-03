@@ -83,7 +83,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -104,7 +104,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -123,7 +123,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -144,13 +144,15 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <SubSystem>Console</SubSystem>
+      <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="src\PhysicsDebugRenderer.cpp" />
     <ClCompile Include="helloworld.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -160,18 +162,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BodyActivationListenerLogger.h" />
-    <ClInclude Include="include\layers\BroadPhaseLayerInterfaceImpl.h" />
-    <ClInclude Include="include\layers\BroadPhaseLayers.h" />
-    <ClInclude Include="include\ContactListenerLogger.h" />
-    <ClInclude Include="include\systems\JoltSystem.h" />
-    <ClInclude Include="include\layers\Layers.h" />
-    <ClInclude Include="include\layers\ObjectLayerPairFilterImpl.h" />
-    <ClInclude Include="include\layers\ObjectVsBroadPhaseLayerFilterImpl.h" />
-    <ClInclude Include="include\SphereFactory.h" />
-    <ClInclude Include="include\systems\PhysicsSystemWrapper.h" />
-    <ClInclude Include="include\systems\PhysicsSystemParameters.h" />
-    <ClInclude Include="include\utils\Utils.h" />
+    <ClInclude Include="include\physics\utils\BodyActivationListenerLogger.h" />
+    <ClInclude Include="include\physics\layers\BroadPhaseLayerInterfaceImpl.h" />
+    <ClInclude Include="include\physics\layers\BroadPhaseLayers.h" />
+    <ClInclude Include="include\physics\utils\ContactListenerLogger.h" />
+    <ClInclude Include="include\rendering\application\WindowsApplication.h" />
+    <ClInclude Include="include\PhysicsDebugRenderer.h" />
+    <ClInclude Include="include\physics\systems\JoltSystem.h" />
+    <ClInclude Include="include\physics\layers\Layers.h" />
+    <ClInclude Include="include\physics\layers\ObjectLayerPairFilterImpl.h" />
+    <ClInclude Include="include\physics\layers\ObjectVsBroadPhaseLayerFilterImpl.h" />
+    <ClInclude Include="include\physics\shapes\SphereFactory.h" />
+    <ClInclude Include="include\systems\MainEngine.h" />
+    <ClInclude Include="include\physics\systems\PhysicsSystemWrapper.h" />
+    <ClInclude Include="include\physics\systems\PhysicsSystemParameters.h" />
+    <ClInclude Include="include\physics\utils\JoltUtils.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

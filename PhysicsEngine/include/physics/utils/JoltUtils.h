@@ -1,12 +1,12 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef JOLT_UTILS_H
+#define JOLT_UTILS_H
 
 #define JPH_ENABLE_ASSERTS
 
 #include <cstdarg>
 #include <format>
 
-namespace Utils
+namespace JoltUtils
 {
 	static void TraceImpl(const char* inFMT, ...)
 	{
