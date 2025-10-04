@@ -8,13 +8,6 @@
 class ContactListenerLogger : public JPH::ContactListener
 {
 public:
-	explicit ContactListenerLogger(JPH::BodyInterface& bodyInterface,
-	                               const JoltSystem::PostStepCallbacks& postStepActions) : postStepActions{
-		postStepActions
-	}
-	{
-	}
-
 	JPH::ValidateResult OnContactValidate(const JPH::Body& inBody1, const JPH::Body& inBody2,
 	                                      JPH::RVec3Arg inBaseOffset,
 	                                      const JPH::CollideShapeResult& inCollisionResult) override
@@ -31,12 +24,12 @@ public:
 		HandleSensor(inBody2, inBody1);
 
 		if (inBody1.GetObjectLayer() == Layers::ICARUS)
-			postStepActions->emplace_back([&]
+			JoltSystem::GetPostStepCallbacks().emplace_back([&]
 			{
 				JoltSystem::GetBodyInterface().SetLinearVelocity(inBody1.GetID(), JPH::Vec3(0, 0.5f, 0));
 			});
 		if (inBody2.GetObjectLayer() == Layers::ICARUS)
-			postStepActions->emplace_back([&]
+			JoltSystem::GetPostStepCallbacks().emplace_back([&]
 			{
 				JoltSystem::GetBodyInterface().SetLinearVelocity(inBody2.GetID(), JPH::Vec3(0, 0.5f, 0));
 			});
@@ -53,9 +46,7 @@ public:
 	}
 
 private:
-	JoltSystem::PostStepCallbacks postStepActions;
-
-	void HandleSensor(const JPH::Body& sensorBody, const JPH::Body& other) const
+	static void HandleSensor(const JPH::Body& sensorBody, const JPH::Body& other)
 	{
 		if (!sensorBody.IsSensor())
 			return;
@@ -63,7 +54,7 @@ private:
 		if (other.GetObjectLayer() != Layers::SLOW_GHOST)
 			return;
 
-		postStepActions->emplace_back
+		JoltSystem::GetPostStepCallbacks().emplace_back
 		(
 			[&]
 			{

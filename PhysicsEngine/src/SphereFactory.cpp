@@ -28,7 +28,7 @@ namespace SphereFactory
 		return sphereSettings;
 	}
 
-	BodyCreationSettings GetGoalBallSettings()
+	BodyCreationSettings GetGhostBallSettings()
 	{
 		BodyCreationSettings sphereSettings(
 			new SphereShape(0.5f),

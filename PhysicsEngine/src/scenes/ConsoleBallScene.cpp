@@ -14,72 +14,69 @@ using namespace JPH::literals;
 
 ConsoleBallScene::~ConsoleBallScene()
 {
-	auto& bodyInterface = physicsSystem->GetBodyInterface();
+	auto& bodyInterface = JoltSystem::GetBodyInterface();
 
 	for (auto staticObject : staticObjects)
+	{
 		bodyInterface.RemoveBody(staticObject);
+		bodyInterface.DestroyBody(staticObject);
+	}
+
+	if (currentBallIndex != 0)
+	{
+		bodyInterface.RemoveBody(currentBallId);
+		bodyInterface.DestroyBody(currentBallId);
+	}
 }
 
 void ConsoleBallScene::Run()
 {
-	constexpr double PHYSICS_UPDATE_RATE = 1.0f / 60.0f;
-	constexpr double TARGET_FPS = 60.0;
-	constexpr double FRAME_TIME = 1000.0 / TARGET_FPS;
-
-	DWORD lastSpaceTrigger = 0;
-	bool prevSpacePressed = false;
-	uint step = 0;
+	uint frameCount = 0;
+	bool wasSpacePressedLastFrame = false; // used to prevent ball skipping
 
 	while (true)
 	{
-		constexpr int cCollisionSteps = 1;
-		const DWORD frameStart = GetTickCount();
 		const bool isSpacePressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
-		const DWORD now = GetTickCount();
+		const DWORD frameStartTime = GetTickCount();
 
-		++step;
+		++frameCount;
 
-		if (isSpacePressed && !prevSpacePressed && now - lastSpaceTrigger >= 1000)
+		if (isSpacePressed && not wasSpacePressedLastFrame)
 		{
-			auto& bodyInterface = physicsSystem->GetBodyInterface();
-
 			++currentBallIndex;
 
-			if (currentBallIndex != 0) [[likely]]
-			{
-				bodyInterface.RemoveBody(currentBallId);
-				bodyInterface.DestroyBody(currentBallId);
-			}
-
-			const BallInfos& currentBallInfo = ballInfos[currentBallIndex % ballInfos.size()];
-			currentBallId = bodyInterface.CreateAndAddBody(currentBallInfo.settings, EActivation::Activate);
-			bodyInterface.SetLinearVelocity(currentBallId, Vec3(0.5f, 0.0f, 0.0f));
-
-			lastSpaceTrigger = now;
+			DeletePreviousBall();
+			SpawnNextBall();
 		}
 
-		prevSpacePressed = isSpacePressed;
+		wasSpacePressedLastFrame = isSpacePressed;
 
-		if (step % 30 == 0 && currentBallIndex >= 0) [[likely]]
-		{
+		if (frameCount % 30 == 0 && currentBallIndex >= 0) // 0.5s/frame if a ball has already been invoked
 			DrawObject();
-		}
 
-		physicsSystem->Update(PHYSICS_UPDATE_RATE, cCollisionSteps,
-		                      &JoltSystem::GetTempAllocator(),
-		                      &JoltSystem::GetJobSystem());
-
-		for (auto& task : *postStepTasks)
-			task();
-
-		postStepTasks->clear();
-
-		const DWORD frameEnd = GetTickCount();
-		const DWORD frameDuration = frameEnd - frameStart;
-
-		if (frameDuration < FRAME_TIME)
-			Sleep(static_cast<DWORD>(FRAME_TIME - frameDuration));
+		UpdatePhysics();
+		WaitBeforeNextFrame(frameStartTime);
 	}
+}
+
+void ConsoleBallScene::DeletePreviousBall() const
+{
+	if (currentBallIndex != 0) [[likely]]
+	{
+		auto& bodyInterface = JoltSystem::GetBodyInterface();
+
+		bodyInterface.RemoveBody(currentBallId);
+		bodyInterface.DestroyBody(currentBallId);
+	}
+}
+
+void ConsoleBallScene::SpawnNextBall()
+{
+	auto& bodyInterface = JoltSystem::GetBodyInterface();
+	const BallInfos& currentBallInfo = ballInfos[currentBallIndex % ballInfos.size()];
+
+	currentBallId = bodyInterface.CreateAndAddBody(currentBallInfo.settings, EActivation::Activate);
+	bodyInterface.SetLinearVelocity(currentBallId, Vec3(0.5f, 0.0f, 0.0f));
 }
 
 void ConsoleBallScene::CreateStaticScene()
@@ -102,8 +99,8 @@ void ConsoleBallScene::CreateStaticScene()
 
 	sensorSettings.mIsSensor = true;
 
-	BodyID wallId = physicsSystem->GetBodyInterface().CreateAndAddBody(wallSettings, EActivation::DontActivate);
-	BodyID wallSensorId = physicsSystem->GetBodyInterface().CreateAndAddBody(sensorSettings, EActivation::DontActivate);
+	BodyID wallId = JoltSystem::GetBodyInterface().CreateAndAddBody(wallSettings, EActivation::DontActivate);
+	BodyID wallSensorId = JoltSystem::GetBodyInterface().CreateAndAddBody(sensorSettings, EActivation::DontActivate);
 
 	staticObjects.emplace_back(wallId);
 	staticObjects.emplace_back(wallSensorId);
@@ -111,12 +108,33 @@ void ConsoleBallScene::CreateStaticScene()
 
 void ConsoleBallScene::DrawObject() const
 {
-	const RVec3 position = physicsSystem->GetBodyInterface().GetCenterOfMassPosition(currentBallId);
-	const Vec3 velocity = physicsSystem->GetBodyInterface().GetLinearVelocity(currentBallId);
+	const RVec3 position = JoltSystem::GetBodyInterface().GetCenterOfMassPosition(currentBallId);
+	const Vec3 velocity = JoltSystem::GetBodyInterface().GetLinearVelocity(currentBallId);
 	const string_view objectName = ballInfos[currentBallIndex % ballInfos.size()].name;
 
 	std::cout << objectName << ": Position = (" << position.GetX() << ", " << position.GetY() <<
-		", " <<
-		position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.
-		GetZ() << ")" << '\n';
+		", " << position.GetZ() << "), Velocity = (" << velocity.GetX() << ", "
+		<< velocity.GetY() << ", " << velocity.GetZ() << ")" << '\n';
+}
+
+void ConsoleBallScene::UpdatePhysics()
+{
+	constexpr int collisionSteps = 1;
+	JoltSystem::GetPhysicSystem().Update(PHYSICS_UPDATE_RATE, collisionSteps,
+		&JoltSystem::GetTempAllocator(),
+		&JoltSystem::GetJobSystem());
+
+	for (auto& task : JoltSystem::GetPostStepCallbacks())
+		task();
+
+	JoltSystem::GetPostStepCallbacks().clear();
+}
+
+void ConsoleBallScene::WaitBeforeNextFrame(const DWORD frameStartTime)
+{
+	const DWORD frameEnd = GetTickCount();
+	const DWORD frameDuration = frameEnd - frameStartTime;
+
+	if (frameDuration < FRAME_TIME)
+		Sleep(static_cast<DWORD>(FRAME_TIME - frameDuration));
 }

@@ -6,7 +6,7 @@
 namespace SphereFactory
 {
 	JPH::BodyCreationSettings GetNormalBallSettings();
-	JPH::BodyCreationSettings GetGoalBallSettings();
+	JPH::BodyCreationSettings GetGhostBallSettings();
 	JPH::BodyCreationSettings GetIcarusBallSettings();
 	JPH::BodyCreationSettings GetSlowGhostBallSettings();
 }
