@@ -16,12 +16,23 @@ public:
 	using MainLoopCallback = std::function<bool()>;
 
 	explicit MainEngine(PM3D::CDispositifD3D11* dispositif, const std::initializer_list<MainLoopCallback> callbacks)
-		: mainLoopCallbacks{callbacks}, pDispositif{ dispositif }
+		: mainLoopCallbacks{callbacks}, pDispositif{dispositif}
 	{
 		InitScene();
 		InitAnimation();
 
 		// TODO: init input system 
+	}
+
+	void AddObjectToScene(const DirectX::XMMATRIX& pos, const float dx, const float dy, const float dz)
+	{
+		ListeScene.emplace_back(std::make_unique<PM3D::CBloc>(pos, dx, dy, dz, pDispositif));
+	}
+
+	void AddObjectToScene(const DirectX::XMMATRIX& pos, JPH::Vec3 scale)
+	{
+		ListeScene.emplace_back(
+			std::make_unique<PM3D::CBloc>(pos, scale.GetX(), scale.GetY(), scale.GetZ(), pDispositif));
 	}
 
 	void Run()
@@ -101,7 +112,7 @@ private:
 		ID3D11DeviceContext* pImmediateContext = pDispositif->GetImmediateContext();
 		ID3D11RenderTargetView* pRenderTargetView = pDispositif->GetRenderTargetView();
 		// On efface la surface de rendu
-		constexpr float Couleur[4] = { 0.0f, 0.5f, 0.0f, 1.0f }; // RGBA - Vert pour le moment
+		constexpr float Couleur[4] = {0.0f, 0.5f, 0.0f, 1.0f}; // RGBA - Vert pour le moment
 		pImmediateContext->ClearRenderTargetView(pRenderTargetView, Couleur);
 
 		for (const auto& object3D : ListeScene)
@@ -121,14 +132,11 @@ private:
 
 	void InitScene()
 	{
-		// Initialisation des objets 3D - création et/ou chargement
-		InitObjets();
-
 		// Initialisation des matrices View et Proj
 		// Dans notre cas, ces matrices sont fixes
 		matView = DirectX::XMMatrixLookAtLH(DirectX::XMVectorSet(0.0f, 0.0f, -10.0f, 1.0f),
-			DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
-			DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
+		                                    DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f),
+		                                    DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 1.0f));
 		float champDeVision = DirectX::XM_PI / 4; // 45 degrés
 		float ratioDAspect = 1.0; // horrible, il faudra corriger ça
 
@@ -141,11 +149,6 @@ private:
 			planEloigne);
 		// Calcul de VP à l’avance
 		matViewProj = matView * matProj;
-	}
-
-	void InitObjets()
-	{
-		ListeScene.emplace_back(std::make_unique<PM3D::CBloc>(2.0f, 2.0f, 2.0f, pDispositif));
 	}
 };
 

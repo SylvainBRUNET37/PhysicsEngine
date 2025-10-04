@@ -114,4 +114,8 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\PS1.hlsl" />
+    <None Include="shaders\VS1.hlsl" />
+  </ItemGroup>
 </Project>

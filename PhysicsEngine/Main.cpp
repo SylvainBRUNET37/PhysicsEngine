@@ -31,7 +31,6 @@ using namespace JPH;
 using namespace JPH::literals;
 using namespace std;
 
-
 int APIENTRY _tWinMain(const HINSTANCE hInstance,
                        HINSTANCE,
                        LPTSTR,
@@ -41,14 +40,6 @@ int APIENTRY _tWinMain(const HINSTANCE hInstance,
 
 	if (!application.Init())
 		return EXIT_FAILURE;
-
-	const auto dispositif = new PM3D::CDispositifD3D11{PM3D::CDS_FENETRE, application.GetMainWindow()};
-
-	MainEngine mainEngine{dispositif, {WindowsApplication::ProcessWindowMessages}};
-
-	mainEngine.Run();
-
-	// Jolt
 
 	const PhysicsSystemParameters<BroadPhaseLayerInterfaceImpl, ObjectVsBroadPhaseLayerFilterImpl,
 		ObjectLayerPairFilterImpl>
@@ -73,28 +64,46 @@ int APIENTRY _tWinMain(const HINSTANCE hInstance,
 	ContactListenerLogger contactListener;
 	physicsSystem.SetContactListener(&contactListener);
 
+	const auto updatePhysics = [&]
+	{
+		constexpr int cCollisionSteps = 1;
+		constexpr float cDeltaTime = 1.0f / 60.0f;
+
+		physicsSystem.Update(cDeltaTime, cCollisionSteps, &JoltSystem::GetTempAllocator(),
+		                     &JoltSystem::GetJobSystem());
+
+		return true;
+	};
+
+	const auto dispositif = new PM3D::CDispositifD3D11{PM3D::CDS_FENETRE, application.GetMainWindow()};
+	MainEngine mainEngine{dispositif, {WindowsApplication::ProcessWindowMessages, updatePhysics}};
+
 	BodyInterface& bodyInterface = physicsSystem.GetBodyInterface();
 
-	BoxShapeSettings floor_shape_settings(Vec3(100.0f, 1.0f, 100.0f));
+	const auto wallScale = Vec3(0.2f, 5.0f, 3.0f);
+	BoxShapeSettings floor_shape_settings(wallScale);
 	floor_shape_settings.SetEmbedded();
 
 	ShapeSettings::ShapeResult floor_shape_result = floor_shape_settings.Create();
 	ShapeRefC floor_shape = floor_shape_result.Get();
 
-	BodyCreationSettings floor_settings(floor_shape, RVec3(0.0_r, -1.0_r, 0.0_r), Quat::sIdentity(),
-		EMotionType::Static, Layers::NON_MOVING);
+	const auto wallRotation = Quat::sRotation(Vec3::sAxisX(), JPH_PI / 2.0f);
+
+	const auto wallPosition = RVec3(2.0_r, 0.0_r, 0.0_r);
+
+	BodyCreationSettings floor_settings(floor_shape, wallPosition, wallRotation,
+	                                    EMotionType::Static, Layers::NON_MOVING);
 
 	Body* floor = bodyInterface.CreateBody(floor_settings);
 	bodyInterface.AddBody(floor->GetID(), EActivation::DontActivate);
 
-	constexpr float cDeltaTime = 1.0f / 60.0f;
-
 	physicsSystem.OptimizeBroadPhase();
 
-	while (true)
-	{
-
-	}
+	const DirectX::XMMATRIX wallMat = DirectX::XMMatrixRotationX(
+		DirectX::XMConvertToRadians(wallRotation.GetRotationAngle(Vec3::sAxisX()))) * DirectX::XMMatrixTranslation(
+			wallPosition.GetX(), wallPosition.GetY(), wallPosition.GetZ());
+	mainEngine.AddObjectToScene(wallMat, wallScale);
+	mainEngine.Run();
 
 	return EXIT_SUCCESS;
 }

@@ -10,7 +10,7 @@ namespace PM3D
 	class CBloc : public CObjet3D
 	{
 	public:
-		CBloc(float dx, float dy, float dz, CDispositifD3D11* pDispositif_);
+		CBloc(const DirectX::XMMATRIX& matWorld, float dx, float dy, float dz, CDispositifD3D11* pDispositif_);
 
 		~CBloc() override;
 

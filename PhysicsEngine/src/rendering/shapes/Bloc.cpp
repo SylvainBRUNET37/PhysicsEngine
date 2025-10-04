@@ -34,11 +34,9 @@ namespace PM3D
 	// PARAMÈTRES:
 	// dx, dy, dz:dimension en x, y, et z
 	// pDispositif: pointeur sur notre objet dispositif
-	CBloc::CBloc(const float dx, const float dy, const float dz, CDispositifD3D11* pDispositif_)
-		: pDispositif(pDispositif_), rotation(0.0f)
+	CBloc::CBloc(const XMMATRIX& matWorld, const float dx, const float dy, const float dz, CDispositifD3D11* pDispositif_)
+		: pDispositif(pDispositif_), matWorld{ matWorld }, rotation(0.0f)
 	{
-		matWorld = XMMatrixIdentity();
-
 		// Les points
 		const XMFLOAT3 point[8] =
 		{

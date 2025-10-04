@@ -203,6 +203,14 @@
     <ClInclude Include="include\physics\utils\JoltUtils.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\PS1.hlsl">
+      <FileType>Document</FileType>
+    </None>
+    <None Include="shaders\VS1.hlsl">
+      <FileType>Document</FileType>
+    </None>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
