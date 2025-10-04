@@ -158,20 +158,20 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\scenes\ConsoleBallScene.cpp" />
     <ClCompile Include="src\SphereFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BodyActivationListenerLogger.h" />
+    <ClInclude Include="include\listeners\BodyActivationListenerLogger.h" />
     <ClInclude Include="include\layers\BroadPhaseLayerInterfaceImpl.h" />
     <ClInclude Include="include\layers\BroadPhaseLayers.h" />
-    <ClInclude Include="include\ContactListenerLogger.h" />
+    <ClInclude Include="include\listeners\ContactListenerLogger.h" />
+    <ClInclude Include="include\scenes\ConsoleBallScene.h" />
     <ClInclude Include="include\systems\JoltSystem.h" />
     <ClInclude Include="include\layers\Layers.h" />
     <ClInclude Include="include\layers\ObjectLayerPairFilterImpl.h" />
     <ClInclude Include="include\layers\ObjectVsBroadPhaseLayerFilterImpl.h" />
     <ClInclude Include="include\SphereFactory.h" />
-    <ClInclude Include="include\systems\PhysicsSystemWrapper.h" />
-    <ClInclude Include="include\systems\PhysicsSystemParameters.h" />
     <ClInclude Include="include\utils\Utils.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

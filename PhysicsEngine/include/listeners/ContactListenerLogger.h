@@ -7,7 +7,7 @@ class ContactListenerLogger : public JPH::ContactListener
 {
 public:
 	explicit ContactListenerLogger(JPH::BodyInterface& bodyInterface,
-	                               std::vector<std::function<void()>>& postStepActions)
+		const std::shared_ptr<std::vector<std::function<void()>>>& postStepActions)
 		: bodyInterface{bodyInterface}, postStepActions{postStepActions}
 	{
 	}
@@ -28,12 +28,12 @@ public:
 		HandleSensor(inBody2, inBody1);
 
 		if (inBody1.GetObjectLayer() == Layers::ICARUS)
-			postStepActions.emplace_back([&]
+			postStepActions->emplace_back([&]
 			{
 				bodyInterface.SetLinearVelocity(inBody1.GetID(), JPH::Vec3(0, 0.5f, 0));
 			});
 		if (inBody2.GetObjectLayer() == Layers::ICARUS)
-			postStepActions.emplace_back([&]
+			postStepActions->emplace_back([&]
 			{
 				bodyInterface.SetLinearVelocity(inBody2.GetID(), JPH::Vec3(0, 0.5f, 0));
 			});
@@ -52,7 +52,7 @@ public:
 
 private:
 	JPH::BodyInterface& bodyInterface;
-	std::vector<std::function<void()>>& postStepActions;
+	std::shared_ptr<std::vector<std::function<void()>>> postStepActions;
 
 	void HandleSensor(const JPH::Body& sensorBody, const JPH::Body& other) const
 	{
@@ -62,7 +62,7 @@ private:
 		if (other.GetObjectLayer() != Layers::SLOW_GHOST)
 			return;
 
-		postStepActions.emplace_back
+		postStepActions->emplace_back
 		(
 			[&]
 			{

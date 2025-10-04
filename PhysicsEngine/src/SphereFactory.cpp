@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "SphereFactory.h"
 
-#include <Jolt/Physics/EActivation.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
@@ -11,60 +10,63 @@
 using namespace JPH;
 using namespace JPH::literals;
 
-BodyID SphereFactory::CreateNormalBall(BodyInterface& bodyInterface)
+namespace SphereFactory
 {
-	BodyCreationSettings sphereSettings(
-		new SphereShape(0.5f), 
-		RVec3(0.0_r, 0.0_r, 0.0_r), 
-		Quat::sIdentity(),
-		EMotionType::Dynamic, 
-		Layers::MOVING
-	);
+	BodyCreationSettings GetNormalBallSettings()
+	{
+		BodyCreationSettings sphereSettings(
+			new SphereShape(0.5f), 
+			RVec3(0.0_r, 0.0_r, 0.0_r), 
+			Quat::sIdentity(),
+			EMotionType::Dynamic, 
+			Layers::MOVING
+		);
 
-	sphereSettings.mRestitution = 0.6f;
-	sphereSettings.mFriction = 0.0f;
+		sphereSettings.mRestitution = 0.6f;
+		sphereSettings.mFriction = 0.0f;
 
-	return bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
-}
+		return sphereSettings;
+	}
 
-BodyID SphereFactory::CreateGhostBall(BodyInterface& bodyInterface)
-{
-	BodyCreationSettings sphereSettings(
-		new SphereShape(0.5f),
-		RVec3(0.0_r, 0.0_r, 0.0_r),
-		Quat::sIdentity(),
-		EMotionType::Dynamic,
-		Layers::GHOST
-	);
+	BodyCreationSettings GetGoalBallSettings()
+	{
+		BodyCreationSettings sphereSettings(
+			new SphereShape(0.5f),
+			RVec3(0.0_r, 0.0_r, 0.0_r),
+			Quat::sIdentity(),
+			EMotionType::Dynamic,
+			Layers::GHOST
+		);
 
-	sphereSettings.mRestitution = 0.0f;
-	sphereSettings.mFriction = 0.0f;
+		sphereSettings.mRestitution = 0.0f;
+		sphereSettings.mFriction = 0.0f;
 
-	return bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
-}
+		return sphereSettings;
+	}
 
-BodyID SphereFactory::CreateIcarusBall(BodyInterface& bodyInterface)
-{
-	BodyCreationSettings sphereSettings(
-		new SphereShape(0.5f),
-		RVec3(0.0_r, 0.0_r, 0.0_r),
-		Quat::sIdentity(),
-		EMotionType::Dynamic,
-		Layers::ICARUS
-	);
+	BodyCreationSettings GetIcarusBallSettings()
+	{
+		BodyCreationSettings sphereSettings(
+			new SphereShape(0.5f),
+			RVec3(0.0_r, 0.0_r, 0.0_r),
+			Quat::sIdentity(),
+			EMotionType::Dynamic,
+			Layers::ICARUS
+		);
 
-	return bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
-}
+		return sphereSettings;
+	}
 
-BodyID SphereFactory::CreateSlowGhostBall(BodyInterface& bodyInterface)
-{
-	BodyCreationSettings sphereSettings(
-		new SphereShape(0.5f),
-		RVec3(0.0_r, 0.0_r, 0.0_r),
-		Quat::sIdentity(),
-		EMotionType::Dynamic,
-		Layers::SLOW_GHOST
-	);
+	BodyCreationSettings GetSlowGhostBallSettings()
+	{
+		BodyCreationSettings sphereSettings(
+			new SphereShape(0.5f),
+			RVec3(0.0_r, 0.0_r, 0.0_r),
+			Quat::sIdentity(),
+			EMotionType::Dynamic,
+			Layers::SLOW_GHOST
+		);
 
-	return bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
+		return sphereSettings;
+	}
 }

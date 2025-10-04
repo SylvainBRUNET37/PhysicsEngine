@@ -24,15 +24,18 @@
     <ClCompile Include="src\SphereFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\scenes\ConsoleScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\ContactListenerLogger.h">
+    <ClInclude Include="include\listeners\ContactListenerLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\SphereFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\BodyActivationListenerLogger.h">
+    <ClInclude Include="include\listeners\BodyActivationListenerLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\layers\ObjectVsBroadPhaseLayerFilterImpl.h">
@@ -59,10 +62,7 @@
     <ClInclude Include="include\systems\JoltSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\systems\PhysicsSystemWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\systems\PhysicsSystemParameters.h">
+    <ClInclude Include="include\scenes\ConsoleScene.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
