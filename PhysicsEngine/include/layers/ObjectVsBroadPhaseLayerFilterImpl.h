@@ -1,7 +1,6 @@
 #ifndef OBJECT_VS_BROAD_PHASE_LAYER_FILTER_IMPL_H
 #define OBJECT_VS_BROAD_PHASE_LAYER_FILTER_IMPL_H
 
-#include <Jolt/Core/IssueReporting.h>
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
 
 #include "BroadPhaseLayers.h"
@@ -26,7 +25,6 @@ public:
 		case Layers::ICARUS:
 			return true;
 		default:
-			//JPH_ASSERT(false);
 			return false;
 		}
 	}

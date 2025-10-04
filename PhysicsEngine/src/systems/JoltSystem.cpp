@@ -19,7 +19,7 @@ void JoltSystem::Init()
 
 	RegisterTypes();
 
-	physicsEngine = std::make_shared<PhysicsEngine::element_type>();
+	physicsSystem = std::make_unique<PhysicsSystem>();
 }
 
 JoltSystem::~JoltSystem()

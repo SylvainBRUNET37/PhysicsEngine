@@ -11,9 +11,8 @@
 class JoltSystem
 {
 public:
-	using PhysicsEngine = std::shared_ptr<JPH::PhysicsSystem>;
 	using PostStepCallback = std::function<void()>;
-	using PostStepCallbacks = std::shared_ptr<std::vector<PostStepCallback>>;
+	using PostStepCallbacks = std::vector<PostStepCallback>;
 
 	JoltSystem(const JoltSystem&) = delete;
 	JoltSystem& operator=(const JoltSystem&) = delete;
@@ -39,14 +38,14 @@ public:
 		return jobSystem;
 	}
 
-	static PhysicsEngine& GetPhysicSystem()
+	static JPH::PhysicsSystem& GetPhysicSystem()
 	{
-		return physicsEngine;
+		return *physicsSystem;
 	}
 
 	static JPH::BodyInterface& GetBodyInterface()
 	{
-		return physicsEngine->GetBodyInterface();
+		return physicsSystem->GetBodyInterface();
 	}
 
 	static PostStepCallbacks& GetPostStepCallbacks()
@@ -56,15 +55,15 @@ public:
 
 	static void AddPostStepCallback(const PostStepCallback& callback)
 	{
-		postStepCallbacks->emplace_back(callback);
+		postStepCallbacks.emplace_back(callback);
 	}
 
 private:
 	static constexpr size_t TEMP_ALLOCATOR_SIZE_MB = 10;
 	static constexpr size_t TEMP_ALLOCATOR_SIZE = TEMP_ALLOCATOR_SIZE_MB * 1024 * 1024;
 
-	inline static PhysicsEngine physicsEngine = nullptr;
-	inline static PostStepCallbacks postStepCallbacks{ new PostStepCallbacks::element_type{} };
+	inline static std::unique_ptr<JPH::PhysicsSystem> physicsSystem = nullptr;
+	inline static PostStepCallbacks postStepCallbacks{};
 
 	~JoltSystem();
 };

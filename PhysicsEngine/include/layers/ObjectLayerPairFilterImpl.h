@@ -1,8 +1,6 @@
 #ifndef OBJECT_LAYER_PAIR_FILTER_IMPL_H
 #define OBJECT_LAYER_PAIR_FILTER_IMPL_H
 
-#include <Jolt/Core/IssueReporting.h>
-
 #include "Layers.h"
 
 class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter
@@ -28,7 +26,6 @@ public:
 		if (inLayer1 == Layers::NON_MOVING && inLayer2 == Layers::MOVING)
 			return true;
 
-		//JPH_ASSERT(false);
 		return false;
 	}
 };

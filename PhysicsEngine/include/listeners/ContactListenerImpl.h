@@ -3,18 +3,12 @@
 
 #include <Jolt/Physics/Collision/ContactListener.h>
 
+#include "layers/Layers.h"
 #include "systems/JoltSystem.h"
 
-class ContactListenerLogger : public JPH::ContactListener
+class ContactListenerImpl : public JPH::ContactListener
 {
 public:
-	explicit ContactListenerLogger(JPH::BodyInterface& bodyInterface,
-	                               const JoltSystem::PostStepCallbacks& postStepActions) : postStepActions{
-		postStepActions
-	}
-	{
-	}
-
 	JPH::ValidateResult OnContactValidate(const JPH::Body& inBody1, const JPH::Body& inBody2,
 	                                      JPH::RVec3Arg inBaseOffset,
 	                                      const JPH::CollideShapeResult& inCollisionResult) override
@@ -27,19 +21,11 @@ public:
 	{
 		std::cout << "A contact was added" << '\n';
 
-		HandleSensor(inBody1, inBody2);
-		HandleSensor(inBody2, inBody1);
+		HandleSlowGhost(inBody1, inBody2);
+		HandleSlowGhost(inBody2, inBody1);
 
-		if (inBody1.GetObjectLayer() == Layers::ICARUS)
-			postStepActions->emplace_back([&]
-			{
-				JoltSystem::GetBodyInterface().SetLinearVelocity(inBody1.GetID(), JPH::Vec3(0, 0.5f, 0));
-			});
-		if (inBody2.GetObjectLayer() == Layers::ICARUS)
-			postStepActions->emplace_back([&]
-			{
-				JoltSystem::GetBodyInterface().SetLinearVelocity(inBody2.GetID(), JPH::Vec3(0, 0.5f, 0));
-			});
+		HandleIcarus(inBody1);
+		HandleIcarus(inBody2);
 	}
 
 	void OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold,
@@ -53,9 +39,7 @@ public:
 	}
 
 private:
-	JoltSystem::PostStepCallbacks postStepActions;
-
-	void HandleSensor(const JPH::Body& sensorBody, const JPH::Body& other) const
+	static void HandleSlowGhost(const JPH::Body& sensorBody, const JPH::Body& other)
 	{
 		if (!sensorBody.IsSensor())
 			return;
@@ -63,7 +47,7 @@ private:
 		if (other.GetObjectLayer() != Layers::SLOW_GHOST)
 			return;
 
-		postStepActions->emplace_back
+		JoltSystem::GetPostStepCallbacks().emplace_back
 		(
 			[&]
 			{
@@ -71,6 +55,17 @@ private:
 					other.GetID(), other.GetLinearVelocity() * 0.5f);
 			}
 		);
+	}
+
+	static void HandleIcarus(const JPH::Body& body)
+	{
+		if (body.GetObjectLayer() == Layers::ICARUS)
+		{
+			JoltSystem::GetPostStepCallbacks().emplace_back([&]
+			{
+				JoltSystem::GetBodyInterface().SetLinearVelocity(body.GetID(), JPH::Vec3(0, 0.5f, 0));
+			});
+		}
 	}
 };
 

@@ -6,7 +6,6 @@
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 
 #include <cstdarg>
-#include <thread>
 #include <utility>
 
 #include "layers/BroadPhaseLayerInterfaceImpl.h"
@@ -16,7 +15,7 @@
 #include "SphereFactory.h"
 #include "listeners/BodyActivationListenerLogger.h"
 #include "utils/Utils.h"
-#include "listeners/ContactListenerLogger.h"
+#include "listeners/ContactListenerImpl.h"
 #include "scenes/ConsoleBallScene.h"
 #include "systems/JoltSystem.h"
 
@@ -29,35 +28,32 @@ using namespace std;
 int main()
 {
 	JoltSystem::Init();
-	const auto& physicsSystem = JoltSystem::GetPhysicSystem();
-	const auto& postStepCallbacks = JoltSystem::GetPostStepCallbacks();
 
-	physicsSystem->Init(1024, 0, 1024, 1024,
+	auto& physicsSystem = JoltSystem::GetPhysicSystem();
+	physicsSystem.Init(1024, 0, 1024, 1024,
 	                    BroadPhaseLayerInterfaceImpl{}, ObjectVsBroadPhaseLayerFilterImpl{},
 	                    ObjectLayerPairFilterImpl{});
 
-	PhysicsSettings settings = physicsSystem->GetPhysicsSettings();
+	PhysicsSettings settings = physicsSystem.GetPhysicsSettings();
 	settings.mMinVelocityForRestitution = 0.01f;
-	physicsSystem->SetPhysicsSettings(settings);
-	physicsSystem->SetGravity(Vec3::sZero());
-
-	BodyInterface& bodyInterface = physicsSystem->GetBodyInterface();
+	physicsSystem.SetPhysicsSettings(settings);
+	physicsSystem.SetGravity(Vec3::sZero());
 
 	BodyActivationListenerLogger bodyActivationListener;
-	physicsSystem->SetBodyActivationListener(&bodyActivationListener);
+	physicsSystem.SetBodyActivationListener(&bodyActivationListener);
 
-	ContactListenerLogger contactListener{bodyInterface, postStepCallbacks};
-	physicsSystem->SetContactListener(&contactListener);
+	ContactListenerImpl contactListener;
+	physicsSystem.SetContactListener(&contactListener);
 
 	const vector<ConsoleBallScene::BallInfos> balls
 	{
-		{"Normal Ball:", SphereFactory::GetNormalBallSettings()},
-		{"Ghost Ball :", SphereFactory::GetGoalBallSettings()},
-		{"Icarus Ball:", SphereFactory::GetIcarusBallSettings()},
-		{"Slow Ball  :", SphereFactory::GetSlowGhostBallSettings()},
+		{"Normal Ball", SphereFactory::GetNormalBallSettings()},
+		{"Ghost Ball ", SphereFactory::GetGhostBallSettings()},
+		{"Icarus Ball", SphereFactory::GetIcarusBallSettings()},
+		{"Slow Ball  ", SphereFactory::GetSlowGhostBallSettings()},
 	};
 
-	ConsoleBallScene consoleScene{physicsSystem, balls, postStepCallbacks};
+	ConsoleBallScene consoleScene{balls};
 	consoleScene.Run();
 
 	return EXIT_SUCCESS;

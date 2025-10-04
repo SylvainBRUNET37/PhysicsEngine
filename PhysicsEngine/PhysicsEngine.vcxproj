@@ -166,7 +166,7 @@
     <ClInclude Include="include\listeners\BodyActivationListenerLogger.h" />
     <ClInclude Include="include\layers\BroadPhaseLayerInterfaceImpl.h" />
     <ClInclude Include="include\layers\BroadPhaseLayers.h" />
-    <ClInclude Include="include\listeners\ContactListenerLogger.h" />
+    <ClInclude Include="include\listeners\ContactListenerImpl.h" />
     <ClInclude Include="include\scenes\ConsoleBallScene.h" />
     <ClInclude Include="include\systems\JoltSystem.h" />
     <ClInclude Include="include\layers\Layers.h" />
