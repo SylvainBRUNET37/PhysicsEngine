@@ -16,8 +16,6 @@ public:
 	                                      JPH::RVec3Arg inBaseOffset,
 	                                      const JPH::CollideShapeResult& inCollisionResult) override
 	{
-		std::cout << "Contact validate callback" << '\n';
-
 		return JPH::ValidateResult::AcceptAllContactsForThisBodyPair;
 	}
 
@@ -25,6 +23,9 @@ public:
 	                    JPH::ContactSettings& ioSettings) override
 	{
 		std::cout << "A contact was added" << '\n';
+
+		HandleSensor(inBody1, inBody2);
+		HandleSensor(inBody2, inBody1);
 
 		if (inBody1.GetObjectLayer() == Layers::ICARUS)
 			postStepActions.emplace_back([&]
@@ -41,7 +42,7 @@ public:
 	void OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold,
 	                        JPH::ContactSettings& ioSettings) override
 	{
-		std::cout << "A contact was persisted" << '\n';
+		
 	}
 
 	void OnContactRemoved(const JPH::SubShapeIDPair& inSubShapePair) override
@@ -52,6 +53,24 @@ public:
 private:
 	JPH::BodyInterface& bodyInterface;
 	std::vector<std::function<void()>>& postStepActions;
+
+	void HandleSensor(const JPH::Body& sensorBody, const JPH::Body& other) const
+	{
+		if (!sensorBody.IsSensor())
+			return;
+
+		if (other.GetObjectLayer() != Layers::SLOW_GHOST)
+			return;
+
+		postStepActions.emplace_back
+		(
+			[&]
+			{
+				bodyInterface.SetLinearVelocity(
+					other.GetID(), other.GetLinearVelocity() * 0.5f);
+			}
+		);
+	}
 };
 
 #endif

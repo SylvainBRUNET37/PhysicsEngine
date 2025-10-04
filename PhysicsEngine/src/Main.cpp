@@ -60,7 +60,7 @@ int main()
 
 	vector<function<void()>> postStepTasks;
 
-	ContactListenerLogger contactListener{ bodyInterface, postStepTasks };
+	ContactListenerLogger contactListener{bodyInterface, postStepTasks};
 	physicsSystem.SetContactListener(&contactListener);
 
 	///
@@ -72,14 +72,25 @@ int main()
 	ShapeSettings::ShapeResult wallShapeResult = wallShapeSettings.Create();
 	ShapeRefC wallShape = wallShapeResult.Get();
 
-	BodyCreationSettings wallSettings(wallShape, RVec3(2.0_r, 0.0_r, 0.0_r), Quat::sRotation(Vec3::sAxisX(), JPH_PI / 2.0f),
-	                                    EMotionType::Static, Layers::NON_MOVING);
+	BodyCreationSettings wallSettings(wallShape, RVec3(2.0_r, 0.0_r, 0.0_r),
+	                                  Quat::sRotation(Vec3::sAxisX(), JPH_PI / 2.0f),
+	                                  EMotionType::Static, Layers::NON_MOVING);
+
+	BodyCreationSettings sensorSettings(wallShape, RVec3(2.0_r, 0.0_r, 0.0_r),
+	                                    Quat::sRotation(Vec3::sAxisX(), JPH_PI / 2.0f),
+	                                    EMotionType::Static, Layers::SENSOR);
+
+	sensorSettings.mIsSensor = true;
+
 	wallSettings.mFriction = 0.0f;
 	wallSettings.mRestitution = 1.0f;
 
-	Body* floor = bodyInterface.CreateBody(wallSettings);
+	BodyID wallId = bodyInterface.CreateAndAddBody(wallSettings, EActivation::DontActivate);
+	BodyID wallSensorId = bodyInterface.CreateAndAddBody(sensorSettings, EActivation::DontActivate);
 
-	bodyInterface.AddBody(floor->GetID(), EActivation::DontActivate);
+	///
+	///
+	///
 
 	using BallCreator = function<BodyID(BodyInterface&)>;
 
@@ -93,14 +104,15 @@ int main()
 	{
 		{.name = "Ghost  Ball", .creator = SphereFactory::CreateGhostBall},
 		{.name = "Normal Ball", .creator = SphereFactory::CreateNormalBall},
-		{.name = "Icarus Ball", .creator = SphereFactory::CreateIcarusBall },
+		{.name = "Icarus Ball", .creator = SphereFactory::CreateIcarusBall},
+		{.name = "Slow   Ball", .creator = SphereFactory::CreateSlowGhostBall},
 	};
 
 
 	///
 	///
 	///
-	
+
 	constexpr double PHYSICS_UPDATE_RATE = 1.0f / 60.0f;
 	constexpr double TARGET_FPS = 60.0;
 	constexpr double FRAME_TIME = 1000.0 / TARGET_FPS;
@@ -110,13 +122,14 @@ int main()
 	uint step = 0;
 
 	const auto displayObject = [&](const string_view sphereName, const BodyID bodyId)
-		{
-			const RVec3 position = bodyInterface.GetCenterOfMassPosition(bodyId);
-			const Vec3 velocity = bodyInterface.GetLinearVelocity(bodyId);
-			cout << sphereName << ": Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " <<
-				position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.
-				GetZ() << ")" << '\n';
-		};
+	{
+		const RVec3 position = bodyInterface.GetCenterOfMassPosition(bodyId);
+		const Vec3 velocity = bodyInterface.GetLinearVelocity(bodyId);
+		cout << sphereName << ": Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() <<
+			", " <<
+			position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.
+			GetZ() << ")" << '\n';
+	};
 
 	DWORD lastSpaceTrigger = 0;
 	bool prevSpacePressed = false;
@@ -161,8 +174,8 @@ int main()
 
 		constexpr int cCollisionSteps = 1;
 		physicsSystem.Update(PHYSICS_UPDATE_RATE, cCollisionSteps,
-			&JoltSystem::GetTempAllocator(),
-			&JoltSystem::GetJobSystem());
+		                     &JoltSystem::GetTempAllocator(),
+		                     &JoltSystem::GetJobSystem());
 
 		for (auto& task : postStepTasks)
 			task();
@@ -176,8 +189,8 @@ int main()
 			Sleep(static_cast<DWORD>(FRAME_TIME - frameDuration));
 	}
 
-	bodyInterface.RemoveBody(floor->GetID());
-	bodyInterface.DestroyBody(floor->GetID());
+	//bodyInterface.RemoveBody(floor->GetID());
+	//bodyInterface.DestroyBody(floor->GetID());
 
 	return 0;
 }

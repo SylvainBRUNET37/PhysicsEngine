@@ -10,7 +10,9 @@ namespace BroadPhaseLayers
 	static constexpr JPH::BroadPhaseLayer MOVING(1);
 	static constexpr JPH::BroadPhaseLayer GHOST(2);
 	static constexpr JPH::BroadPhaseLayer ICARUS(3);
-	static constexpr JPH::uint NUM_LAYERS(4);
+	static constexpr JPH::BroadPhaseLayer SLOW_GHOST(4);
+	static constexpr JPH::BroadPhaseLayer SENSOR(5);
+	static constexpr JPH::uint NUM_LAYERS(6);
 };
 
 #endif

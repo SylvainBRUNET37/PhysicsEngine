@@ -10,20 +10,23 @@
 class ObjectVsBroadPhaseLayerFilterImpl : public JPH::ObjectVsBroadPhaseLayerFilter
 {
 public:
-	[[nodiscard]] bool ShouldCollide(const JPH::ObjectLayer inLayer1, const JPH::BroadPhaseLayer inLayer2) const override
+	[[nodiscard]] bool
+	ShouldCollide(const JPH::ObjectLayer inLayer1, const JPH::BroadPhaseLayer inLayer2) const override
 	{
 		switch (inLayer1)
 		{
 		case Layers::NON_MOVING:
 			return inLayer2 == BroadPhaseLayers::MOVING;
 		case Layers::MOVING:
-			return inLayer2 != BroadPhaseLayers::GHOST;
+			return inLayer2 != BroadPhaseLayers::GHOST && inLayer2 != BroadPhaseLayers::SLOW_GHOST;
 		case Layers::GHOST:
 			return false;
+		case Layers::SLOW_GHOST:
+			return true;
 		case Layers::ICARUS:
 			return true;
 		default:
-			JPH_ASSERT(false);
+			//JPH_ASSERT(false);
 			return false;
 		}
 	}

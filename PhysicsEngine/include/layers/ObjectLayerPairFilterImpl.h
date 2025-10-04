@@ -13,6 +13,12 @@ public:
 		if (inLayer1 == Layers::GHOST || inLayer2 == Layers::GHOST)
 			return false;
 
+		if (inLayer1 == Layers::SLOW_GHOST && inLayer2 == Layers::SENSOR)
+			return true;
+
+		if (inLayer2 == Layers::SLOW_GHOST && inLayer1 == Layers::SENSOR)
+			return true;
+
 		if (inLayer1 == Layers::ICARUS || inLayer2 == Layers::ICARUS)
 			return true;
 
@@ -22,7 +28,7 @@ public:
 		if (inLayer1 == Layers::NON_MOVING && inLayer2 == Layers::MOVING)
 			return true;
 
-		JPH_ASSERT(false);
+		//JPH_ASSERT(false);
 		return false;
 	}
 };
