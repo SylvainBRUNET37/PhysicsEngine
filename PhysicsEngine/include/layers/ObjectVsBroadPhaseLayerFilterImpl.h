@@ -17,7 +17,9 @@ public:
 		case Layers::NON_MOVING:
 			return inLayer2 == BroadPhaseLayers::MOVING;
 		case Layers::MOVING:
-			return true;
+			return inLayer2 != BroadPhaseLayers::GHOST;
+		case Layers::GHOST:
+			return false;
 		default:
 			JPH_ASSERT(false);
 			return false;

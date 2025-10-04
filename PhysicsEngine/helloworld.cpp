@@ -18,6 +18,7 @@
 #include "layers/ObjectLayerPairFilterImpl.h"
 #include "layers/ObjectVsBroadPhaseLayerFilterImpl.h"
 #include "ContactListenerLogger.h"
+#include "SphereFactory.h"
 #include "systems/JoltSystem.h"
 #include "systems/PhysicsSystemWrapper.h"
 #include "systems/PhysicsSystemParameters.h"
@@ -78,21 +79,11 @@ int main()
 
 	bodyInterface.AddBody(floor->GetID(), EActivation::DontActivate);
 
-	///
-	///
-	///
+	const auto normalSphereId = SphereFactory::CreateNormalBall(bodyInterface);
+	bodyInterface.SetLinearVelocity(normalSphereId, Vec3(0.5f, 0.0f, 0.0f));
 
-	BodyCreationSettings sphereSettings(new SphereShape(0.5f), RVec3(0.0_r, 0.0_r, 0.0_r), Quat::sIdentity(),
-	                                     EMotionType::Dynamic, Layers::MOVING);
-
-	sphereSettings.mRestitution = 0.6f;
-	sphereSettings.mFriction = 0.0f;
-
-	BodyID sphere_id = bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
-
-	bodyInterface.SetLinearVelocity(sphere_id, Vec3(0.5f, 0.0f, 0.0f));
-	const auto shape = bodyInterface.GetTransformedShape(sphere_id);
-	
+	const auto ghostSphereId = SphereFactory::CreateGhostBall(bodyInterface);
+	bodyInterface.SetLinearVelocity(ghostSphereId, Vec3(0.5f, 0.0f, 0.0f));
 
 	///
 	///
@@ -103,18 +94,24 @@ int main()
 	physicsSystem.OptimizeBroadPhase();
 
 	uint step = 0;
-	while (bodyInterface.IsActive(sphere_id))
+
+	const auto displayObject = [&](const string_view sphereName, const BodyID bodyId)
+		{
+			const RVec3 position = bodyInterface.GetCenterOfMassPosition(bodyId);
+			const Vec3 velocity = bodyInterface.GetLinearVelocity(bodyId);
+			cout << sphereName << ": Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " <<
+				position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.
+				GetZ() << ")" << '\n';
+		};
+
+	while (bodyInterface.IsActive(normalSphereId))
 	{
 		++step;
 
 		if (step % 30 == 0)
 		{
-			// Output current position and velocity of the sphere
-			RVec3 position = bodyInterface.GetCenterOfMassPosition(sphere_id);
-			Vec3 velocity = bodyInterface.GetLinearVelocity(sphere_id);
-			cout << "Sphere: Step " << step << ": Position = (" << position.GetX() << ", " << position.GetY() << ", " <<
-				position.GetZ() << "), Velocity = (" << velocity.GetX() << ", " << velocity.GetY() << ", " << velocity.
-				GetZ() << ")" << '\n';
+			//displayObject("NormalBall", normalSphereId);
+			displayObject("GhostBall ", ghostSphereId);
 		}
 
 		constexpr int cCollisionSteps = 1;
@@ -123,8 +120,11 @@ int main()
 		                      &JoltSystem::GetJobSystem());
 	}
 
-	bodyInterface.RemoveBody(sphere_id);
-	bodyInterface.DestroyBody(sphere_id);
+	bodyInterface.RemoveBody(normalSphereId);
+	bodyInterface.DestroyBody(normalSphereId);
+
+	bodyInterface.RemoveBody(ghostSphereId);
+	bodyInterface.DestroyBody(ghostSphereId);
 
 	bodyInterface.RemoveBody(floor->GetID());
 	bodyInterface.DestroyBody(floor->GetID());
