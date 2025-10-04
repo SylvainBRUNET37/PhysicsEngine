@@ -29,6 +29,8 @@ public:
 		return true;
 	}
 
+	[[nodiscard]] HWND& GetMainWindow() { return mainWindow; }
+
 	static bool ProcessWindowMessages()
 	{
 		MSG msg;

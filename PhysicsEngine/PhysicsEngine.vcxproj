@@ -86,8 +86,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Jolt.lib;dxguid.lib;winmm.lib;d3d11.lib;d3dcompiler.lib;DXGI.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)shaders\*.*"  "$(OutDir)shaders\"  /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -107,8 +110,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Jolt.lib;dxguid.lib;winmm.lib;d3d11.lib;d3dcompiler.lib;DXGI.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)shaders\*.*"  "$(OutDir)shaders\"  /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -126,8 +132,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Jolt.lib;dxguid.lib;winmm.lib;d3d11.lib;d3dcompiler.lib;DXGI.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)shaders\*.*"  "$(OutDir)shaders\"  /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -147,8 +156,11 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)..\Jolt\Build\VS2022_CL\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Jolt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Jolt.lib;dxguid.lib;winmm.lib;d3d11.lib;d3dcompiler.lib;DXGI.lib;dinput8.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy "$(ProjectDir)shaders\*.*"  "$(OutDir)shaders\"  /E /Y</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -160,6 +172,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\rendering\device\DispositifD3D11.cpp" />
+    <ClCompile Include="src\rendering\shapes\Bloc.cpp" />
+    <ClCompile Include="src\rendering\shapes\SommetBloc.cpp" />
+    <ClCompile Include="src\rendering\utils\Horloge.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\physics\utils\BodyActivationListenerLogger.h" />
@@ -173,6 +189,14 @@
     <ClInclude Include="include\physics\layers\ObjectLayerPairFilterImpl.h" />
     <ClInclude Include="include\physics\layers\ObjectVsBroadPhaseLayerFilterImpl.h" />
     <ClInclude Include="include\physics\shapes\SphereFactory.h" />
+    <ClInclude Include="include\rendering\device\Dispositif.h" />
+    <ClInclude Include="include\rendering\device\DispositifD3D11.h" />
+    <ClInclude Include="include\rendering\shapes\Bloc.h" />
+    <ClInclude Include="include\rendering\shapes\Objet3D.h" />
+    <ClInclude Include="include\rendering\shapes\SommetBloc.h" />
+    <ClInclude Include="include\rendering\utils\ComPtr.h" />
+    <ClInclude Include="include\rendering\utils\Horloge.h" />
+    <ClInclude Include="include\rendering\utils\Util.h" />
     <ClInclude Include="include\systems\MainEngine.h" />
     <ClInclude Include="include\physics\systems\PhysicsSystemWrapper.h" />
     <ClInclude Include="include\physics\systems\PhysicsSystemParameters.h" />
