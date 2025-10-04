@@ -14,6 +14,7 @@ public:
 		mObjectToBroadPhase[Layers::NON_MOVING] = BroadPhaseLayers::NON_MOVING;
 		mObjectToBroadPhase[Layers::MOVING] = BroadPhaseLayers::MOVING;
 		mObjectToBroadPhase[Layers::GHOST] = BroadPhaseLayers::GHOST;
+		mObjectToBroadPhase[Layers::ICARUS] = BroadPhaseLayers::ICARUS;
 	}
 
 	[[nodiscard]] JPH::uint GetNumBroadPhaseLayers() const override
@@ -35,6 +36,7 @@ public:
 		case static_cast<JPH::BroadPhaseLayer::Type>(BroadPhaseLayers::NON_MOVING): return "NON_MOVING";
 		case static_cast<JPH::BroadPhaseLayer::Type>(BroadPhaseLayers::MOVING): return "MOVING";
 		case static_cast<JPH::BroadPhaseLayer::Type>(BroadPhaseLayers::GHOST): return "GHOST";
+		case static_cast<JPH::BroadPhaseLayer::Type>(BroadPhaseLayers::ICARUS): return "ICARUS";
 		default: JPH_ASSERT(false);
 			return "INVALID";
 		}

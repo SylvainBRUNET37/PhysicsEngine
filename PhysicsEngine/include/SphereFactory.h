@@ -7,4 +7,5 @@ namespace SphereFactory
 {
 	JPH::BodyID CreateNormalBall(JPH::BodyInterface& bodyInterface);
 	JPH::BodyID CreateGhostBall(JPH::BodyInterface& bodyInterface);
+	JPH::BodyID CreateIcarusBall(JPH::BodyInterface& bodyInterface);
 }

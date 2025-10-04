@@ -42,3 +42,16 @@ BodyID SphereFactory::CreateGhostBall(BodyInterface& bodyInterface)
 
 	return bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
 }
+
+BodyID SphereFactory::CreateIcarusBall(BodyInterface& bodyInterface)
+{
+	const BodyCreationSettings sphereSettings(
+		new SphereShape(0.5f),
+		RVec3(0.0_r, 0.0_r, 0.0_r),
+		Quat::sIdentity(),
+		EMotionType::Dynamic,
+		Layers::ICARUS
+	);
+
+	return bodyInterface.CreateAndAddBody(sphereSettings, EActivation::Activate);
+}

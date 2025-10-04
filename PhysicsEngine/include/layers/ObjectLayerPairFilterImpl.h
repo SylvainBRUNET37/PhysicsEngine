@@ -13,6 +13,9 @@ public:
 		if (inLayer1 == Layers::GHOST || inLayer2 == Layers::GHOST)
 			return false;
 
+		if (inLayer1 == Layers::ICARUS || inLayer2 == Layers::ICARUS)
+			return true;
+
 		if (inLayer1 == Layers::MOVING && inLayer2 == Layers::NON_MOVING)
 			return true;
 

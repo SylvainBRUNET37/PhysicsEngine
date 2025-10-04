@@ -20,6 +20,8 @@ public:
 			return inLayer2 != BroadPhaseLayers::GHOST;
 		case Layers::GHOST:
 			return false;
+		case Layers::ICARUS:
+			return true;
 		default:
 			JPH_ASSERT(false);
 			return false;

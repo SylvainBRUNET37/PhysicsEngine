@@ -40,7 +40,7 @@ private:
 	static constexpr size_t TEMP_ALLOCATOR_SIZE_MB = 10;
 	static constexpr size_t TEMP_ALLOCATOR_SIZE = TEMP_ALLOCATOR_SIZE_MB * 1024 * 1024;
 
-	static JoltSystem joltInitialiser;
+	static JoltSystem joltSystem;
 
 	JoltSystem()
 	{
@@ -62,6 +62,6 @@ private:
 	}
 };
 
-inline JoltSystem JoltSystem::joltInitialiser{};
+inline JoltSystem JoltSystem::joltSystem{};
 
 #endif

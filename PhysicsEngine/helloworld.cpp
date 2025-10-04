@@ -53,13 +53,15 @@ int main()
 	physicsSystem.SetPhysicsSettings(settings);
 	physicsSystem.SetGravity(Vec3::sZero());
 
+	BodyInterface& bodyInterface = physicsSystem.GetBodyInterface();
+
 	BodyActivationListenerLogger bodyActivationListener;
 	physicsSystem.SetBodyActivationListener(&bodyActivationListener);
 
-	ContactListenerLogger contactListener;
-	physicsSystem.SetContactListener(&contactListener);
+	vector<function<void()>> postStepTasks;
 
-	BodyInterface& bodyInterface = physicsSystem.GetBodyInterface();
+	ContactListenerLogger contactListener{ bodyInterface, postStepTasks };
+	physicsSystem.SetContactListener(&contactListener);
 
 	///
 	///
@@ -90,7 +92,8 @@ int main()
 	vector<ObjectDebug> objects
 	{
 		{.name = "Ghost  Ball", .creator = SphereFactory::CreateGhostBall},
-		{.name = "Normal Ball", .creator = SphereFactory::CreateNormalBall}
+		{.name = "Normal Ball", .creator = SphereFactory::CreateNormalBall},
+		{.name = "Icarus Ball", .creator = SphereFactory::CreateIcarusBall },
 	};
 
 
@@ -150,7 +153,7 @@ int main()
 
 		prevSpacePressed = isSpacePressed;
 
-		if (step % 60 == 0)
+		if (step % 30 == 0)
 		{
 			for (const auto& object : scene)
 				displayObject(object.first, object.second);
@@ -160,6 +163,11 @@ int main()
 		physicsSystem.Update(PHYSICS_UPDATE_RATE, cCollisionSteps,
 			&JoltSystem::GetTempAllocator(),
 			&JoltSystem::GetJobSystem());
+
+		for (auto& task : postStepTasks)
+			task();
+
+		postStepTasks.clear();
 
 		DWORD frameEnd = GetTickCount();
 		DWORD frameDuration = frameEnd - frameStart;
