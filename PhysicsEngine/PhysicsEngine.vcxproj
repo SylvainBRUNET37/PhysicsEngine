@@ -160,6 +160,7 @@
     </ClCompile>
     <ClCompile Include="src\scenes\ConsoleBallScene.cpp" />
     <ClCompile Include="src\SphereFactory.cpp" />
+    <ClCompile Include="src\systems\JoltSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\listeners\BodyActivationListenerLogger.h" />

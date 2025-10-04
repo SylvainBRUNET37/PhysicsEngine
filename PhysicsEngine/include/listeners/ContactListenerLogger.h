@@ -3,12 +3,15 @@
 
 #include <Jolt/Physics/Collision/ContactListener.h>
 
+#include "systems/JoltSystem.h"
+
 class ContactListenerLogger : public JPH::ContactListener
 {
 public:
 	explicit ContactListenerLogger(JPH::BodyInterface& bodyInterface,
-		const std::shared_ptr<std::vector<std::function<void()>>>& postStepActions)
-		: bodyInterface{bodyInterface}, postStepActions{postStepActions}
+	                               const JoltSystem::PostStepCallbacks& postStepActions) : postStepActions{
+		postStepActions
+	}
 	{
 	}
 
@@ -30,19 +33,18 @@ public:
 		if (inBody1.GetObjectLayer() == Layers::ICARUS)
 			postStepActions->emplace_back([&]
 			{
-				bodyInterface.SetLinearVelocity(inBody1.GetID(), JPH::Vec3(0, 0.5f, 0));
+				JoltSystem::GetBodyInterface().SetLinearVelocity(inBody1.GetID(), JPH::Vec3(0, 0.5f, 0));
 			});
 		if (inBody2.GetObjectLayer() == Layers::ICARUS)
 			postStepActions->emplace_back([&]
 			{
-				bodyInterface.SetLinearVelocity(inBody2.GetID(), JPH::Vec3(0, 0.5f, 0));
+				JoltSystem::GetBodyInterface().SetLinearVelocity(inBody2.GetID(), JPH::Vec3(0, 0.5f, 0));
 			});
 	}
 
 	void OnContactPersisted(const JPH::Body& inBody1, const JPH::Body& inBody2, const JPH::ContactManifold& inManifold,
 	                        JPH::ContactSettings& ioSettings) override
 	{
-		
 	}
 
 	void OnContactRemoved(const JPH::SubShapeIDPair& inSubShapePair) override
@@ -51,8 +53,7 @@ public:
 	}
 
 private:
-	JPH::BodyInterface& bodyInterface;
-	std::shared_ptr<std::vector<std::function<void()>>> postStepActions;
+	JoltSystem::PostStepCallbacks postStepActions;
 
 	void HandleSensor(const JPH::Body& sensorBody, const JPH::Body& other) const
 	{
@@ -66,7 +67,7 @@ private:
 		(
 			[&]
 			{
-				bodyInterface.SetLinearVelocity(
+				JoltSystem::GetBodyInterface().SetLinearVelocity(
 					other.GetID(), other.GetLinearVelocity() * 0.5f);
 			}
 		);

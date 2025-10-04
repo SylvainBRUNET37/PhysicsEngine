@@ -18,6 +18,7 @@
 #include "utils/Utils.h"
 #include "listeners/ContactListenerLogger.h"
 #include "scenes/ConsoleBallScene.h"
+#include "systems/JoltSystem.h"
 
 JPH_SUPPRESS_WARNINGS // Disable common warnings triggered by Jolt
 
@@ -27,7 +28,10 @@ using namespace std;
 
 int main()
 {
-	const shared_ptr<PhysicsSystem> physicsSystem{new PhysicsSystem{}};
+	JoltSystem::Init();
+	const auto& physicsSystem = JoltSystem::GetPhysicSystem();
+	const auto& postStepCallbacks = JoltSystem::GetPostStepCallbacks();
+
 	physicsSystem->Init(1024, 0, 1024, 1024,
 	                    BroadPhaseLayerInterfaceImpl{}, ObjectVsBroadPhaseLayerFilterImpl{},
 	                    ObjectLayerPairFilterImpl{});
@@ -42,9 +46,7 @@ int main()
 	BodyActivationListenerLogger bodyActivationListener;
 	physicsSystem->SetBodyActivationListener(&bodyActivationListener);
 
-	const shared_ptr<vector<function<void()>>> postStepTasks{new vector<function<void()>>{}};
-
-	ContactListenerLogger contactListener{bodyInterface, postStepTasks};
+	ContactListenerLogger contactListener{bodyInterface, postStepCallbacks};
 	physicsSystem->SetContactListener(&contactListener);
 
 	const vector<ConsoleBallScene::BallInfos> balls
@@ -55,7 +57,7 @@ int main()
 		{"Slow Ball  :", SphereFactory::GetSlowGhostBallSettings()},
 	};
 
-	ConsoleBallScene consoleScene{physicsSystem, balls, postStepTasks};
+	ConsoleBallScene consoleScene{physicsSystem, balls, postStepCallbacks};
 	consoleScene.Run();
 
 	return EXIT_SUCCESS;

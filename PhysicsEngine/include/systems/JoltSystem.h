@@ -1,23 +1,26 @@
 #ifndef JOLT_INITIALISER_H
 #define JOLT_INITIALISER_H
 
-#include <Jolt/RegisterTypes.h>
-#include <Jolt/Core/Factory.h>
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Core/TempAllocator.h>
+#include <Jolt/Physics/PhysicsSettings.h>
+#include <Jolt/Physics/PhysicsSystem.h>
 
 #include <thread>
-#include <Jolt/Physics/PhysicsSettings.h>
-
-#include "utils/Utils.h"
 
 class JoltSystem
 {
 public:
+	using PhysicsEngine = std::shared_ptr<JPH::PhysicsSystem>;
+	using PostStepCallback = std::function<void()>;
+	using PostStepCallbacks = std::shared_ptr<std::vector<PostStepCallback>>;
+
 	JoltSystem(const JoltSystem&) = delete;
 	JoltSystem& operator=(const JoltSystem&) = delete;
 	JoltSystem(JoltSystem&&) = delete;
 	JoltSystem& operator=(JoltSystem&&) = delete;
+
+	static void Init();
 
 	static JPH::TempAllocatorImpl& GetTempAllocator()
 	{
@@ -36,32 +39,34 @@ public:
 		return jobSystem;
 	}
 
+	static PhysicsEngine& GetPhysicSystem()
+	{
+		return physicsEngine;
+	}
+
+	static JPH::BodyInterface& GetBodyInterface()
+	{
+		return physicsEngine->GetBodyInterface();
+	}
+
+	static PostStepCallbacks& GetPostStepCallbacks()
+	{
+		return postStepCallbacks;
+	}
+
+	static void AddPostStepCallback(const PostStepCallback& callback)
+	{
+		postStepCallbacks->emplace_back(callback);
+	}
+
 private:
 	static constexpr size_t TEMP_ALLOCATOR_SIZE_MB = 10;
 	static constexpr size_t TEMP_ALLOCATOR_SIZE = TEMP_ALLOCATOR_SIZE_MB * 1024 * 1024;
 
-	static JoltSystem joltSystem;
+	inline static PhysicsEngine physicsEngine = nullptr;
+	inline static PostStepCallbacks postStepCallbacks{ new PostStepCallbacks::element_type{} };
 
-	JoltSystem()
-	{
-		JPH::RegisterDefaultAllocator();
-
-		JPH::Trace = Utils::TraceImpl;
-		JPH_IF_ENABLE_ASSERTS(JPH::AssertFailed = Utils::AssertFailedImpl;)
-
-		JPH::Factory::sInstance = new JPH::Factory();
-
-		JPH::RegisterTypes();
-	}
-
-	~JoltSystem()
-	{
-		JPH::UnregisterTypes();
-		delete JPH::Factory::sInstance;
-		JPH::Factory::sInstance = nullptr;
-	}
+	~JoltSystem();
 };
-
-inline JoltSystem JoltSystem::joltSystem{};
 
 #endif
