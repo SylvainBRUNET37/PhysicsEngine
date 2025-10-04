@@ -4,12 +4,12 @@
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Physics/PhysicsSystem.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
-#include <Jolt/Physics/Collision/Shape/SphereShape.h>
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyActivationListener.h>
 
 #include <cstdarg>
 #include <thread>
+#include <utility>
 
 #include "BodyActivationListenerLogger.h"
 #include "layers/BroadPhaseLayerInterfaceImpl.h"
@@ -79,17 +79,28 @@ int main()
 
 	bodyInterface.AddBody(floor->GetID(), EActivation::DontActivate);
 
-	const auto normalSphereId = SphereFactory::CreateNormalBall(bodyInterface);
-	bodyInterface.SetLinearVelocity(normalSphereId, Vec3(0.5f, 0.0f, 0.0f));
+	using BallCreator = function<BodyID(BodyInterface&)>;
 
-	const auto ghostSphereId = SphereFactory::CreateGhostBall(bodyInterface);
-	bodyInterface.SetLinearVelocity(ghostSphereId, Vec3(0.5f, 0.0f, 0.0f));
+	struct ObjectDebug
+	{
+		string name;
+		BallCreator creator;
+	};
+
+	vector<ObjectDebug> objects
+	{
+		{.name = "Ghost  Ball", .creator = SphereFactory::CreateGhostBall},
+		{.name = "Normal Ball", .creator = SphereFactory::CreateNormalBall}
+	};
+
 
 	///
 	///
 	///
 	
-	constexpr float cDeltaTime = 1.0f / 60.0f;
+	constexpr double PHYSICS_UPDATE_RATE = 1.0f / 60.0f;
+	constexpr double TARGET_FPS = 60.0;
+	constexpr double FRAME_TIME = 1000.0 / TARGET_FPS;
 
 	physicsSystem.OptimizeBroadPhase();
 
@@ -104,27 +115,58 @@ int main()
 				GetZ() << ")" << '\n';
 		};
 
-	while (bodyInterface.IsActive(normalSphereId))
+	DWORD lastSpaceTrigger = 0;
+	bool prevSpacePressed = false;
+	vector<pair<string, BodyID>> scene;
+
+	while (true)
 	{
+		DWORD frameStart = GetTickCount();
+
 		++step;
 
-		if (step % 30 == 0)
+		bool isSpacePressed = GetAsyncKeyState(VK_SPACE) & 0x8000;
+		DWORD now = GetTickCount();
+
+		if (isSpacePressed && !prevSpacePressed && now - lastSpaceTrigger >= 1000)
 		{
-			//displayObject("NormalBall", normalSphereId);
-			displayObject("GhostBall ", ghostSphereId);
+			if (!scene.empty())
+			{
+				auto previousBall = scene.back();
+				bodyInterface.RemoveBody(previousBall.second);
+				bodyInterface.DestroyBody(previousBall.second);
+				scene.pop_back();
+			}
+
+			ObjectDebug objectDebug = objects.back();
+			BodyID object = objectDebug.creator(bodyInterface);
+			objects.pop_back();
+
+			scene.emplace_back(objectDebug.name, object);
+			bodyInterface.SetLinearVelocity(object, Vec3(0.5f, 0.0f, 0.0f));
+
+			lastSpaceTrigger = now;
+		}
+
+		prevSpacePressed = isSpacePressed;
+
+		if (step % 60 == 0)
+		{
+			for (const auto& object : scene)
+				displayObject(object.first, object.second);
 		}
 
 		constexpr int cCollisionSteps = 1;
+		physicsSystem.Update(PHYSICS_UPDATE_RATE, cCollisionSteps,
+			&JoltSystem::GetTempAllocator(),
+			&JoltSystem::GetJobSystem());
 
-		physicsSystem.Update(cDeltaTime, cCollisionSteps, &JoltSystem::GetTempAllocator(),
-		                      &JoltSystem::GetJobSystem());
+		DWORD frameEnd = GetTickCount();
+		DWORD frameDuration = frameEnd - frameStart;
+
+		if (frameDuration < FRAME_TIME)
+			Sleep(static_cast<DWORD>(FRAME_TIME - frameDuration));
 	}
-
-	bodyInterface.RemoveBody(normalSphereId);
-	bodyInterface.DestroyBody(normalSphereId);
-
-	bodyInterface.RemoveBody(ghostSphereId);
-	bodyInterface.DestroyBody(ghostSphereId);
 
 	bodyInterface.RemoveBody(floor->GetID());
 	bodyInterface.DestroyBody(floor->GetID());

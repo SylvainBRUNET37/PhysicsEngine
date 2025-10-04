@@ -7,4 +7,6 @@
 
 #include <Jolt/Jolt.h>
 
+#include <Windows.h>
+
 #endif
