@@ -55,6 +55,7 @@ int main()
 		{"Slow Ball  ", SphereFactory::GetSlowGhostBallSettings()},
 	};
 
+	cout << "Appuyez sur [ESPACE] pour lancer une balle" << '\n';
 	ConsoleBallScene consoleScene{balls};
 	consoleScene.Run();
 

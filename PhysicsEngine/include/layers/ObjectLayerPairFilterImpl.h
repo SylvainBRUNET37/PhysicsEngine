@@ -8,22 +8,19 @@ class ObjectLayerPairFilterImpl : public JPH::ObjectLayerPairFilter
 public:
 	[[nodiscard]] bool ShouldCollide(const JPH::ObjectLayer inLayer1, const JPH::ObjectLayer inLayer2) const override
 	{
-		if (inLayer1 == Layers::GHOST || inLayer2 == Layers::GHOST)
-			return false;
-
 		if (inLayer1 == Layers::SLOW_GHOST && inLayer2 == Layers::SENSOR)
 			return true;
-
 		if (inLayer2 == Layers::SLOW_GHOST && inLayer1 == Layers::SENSOR)
 			return true;
 
-		if (inLayer1 == Layers::ICARUS || inLayer2 == Layers::ICARUS)
+		if (inLayer1 == Layers::ICARUS && inLayer2 == Layers::NON_MOVING)
+			return true;
+		if (inLayer2 == Layers::ICARUS && inLayer1 == Layers::NON_MOVING)
 			return true;
 
 		if (inLayer1 == Layers::MOVING && inLayer2 == Layers::NON_MOVING)
 			return true;
-
-		if (inLayer1 == Layers::NON_MOVING && inLayer2 == Layers::MOVING)
+		if (inLayer2 == Layers::MOVING && inLayer1 == Layers::NON_MOVING)
 			return true;
 
 		return false;
