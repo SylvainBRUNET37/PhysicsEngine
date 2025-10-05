@@ -1,6 +1,7 @@
 #ifndef JOLT_INITIALISER_H
 #define JOLT_INITIALISER_H
 
+#include <cassert>
 #include <Jolt/Core/JobSystemThreadPool.h>
 #include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Physics/PhysicsSettings.h>
@@ -40,11 +41,15 @@ public:
 
 	static JPH::PhysicsSystem& GetPhysicSystem()
 	{
+		assert(physicsSystem != nullptr);
+
 		return *physicsSystem;
 	}
 
 	static JPH::BodyInterface& GetBodyInterface()
 	{
+		assert(physicsSystem != nullptr);
+
 		return physicsSystem->GetBodyInterface();
 	}
 

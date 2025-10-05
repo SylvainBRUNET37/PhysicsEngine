@@ -30,9 +30,12 @@ int main()
 	JoltSystem::Init();
 
 	auto& physicsSystem = JoltSystem::GetPhysicSystem();
+
+	const BroadPhaseLayerInterfaceImpl broadPhaseLayerInterface;
+	const ObjectVsBroadPhaseLayerFilterImpl objectVsBroadPhaseLayerFilter;
+	const ObjectLayerPairFilterImpl objectLayerPairFilter;
 	physicsSystem.Init(1024, 0, 1024, 1024,
-	                    BroadPhaseLayerInterfaceImpl{}, ObjectVsBroadPhaseLayerFilterImpl{},
-	                    ObjectLayerPairFilterImpl{});
+		broadPhaseLayerInterface, objectVsBroadPhaseLayerFilter, objectLayerPairFilter);
 
 	PhysicsSettings settings = physicsSystem.GetPhysicsSettings();
 	settings.mMinVelocityForRestitution = 0.01f;
