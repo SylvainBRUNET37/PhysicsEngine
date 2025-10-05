@@ -28,7 +28,6 @@ using namespace std;
 int main()
 {
 	JoltSystem::Init();
-
 	auto& physicsSystem = JoltSystem::GetPhysicSystem();
 
 	const BroadPhaseLayerInterfaceImpl broadPhaseLayerInterface;

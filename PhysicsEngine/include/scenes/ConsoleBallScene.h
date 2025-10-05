@@ -43,7 +43,7 @@ private:
 	void CreateStaticScene();
 	void DeletePreviousBall() const;
 	void SpawnNextBall();
-	void DrawObject() const;
+	void DrawCurrentBall() const;
 	static void UpdatePhysics();
 
 	static void WaitBeforeNextFrame(DWORD frameStartTime);

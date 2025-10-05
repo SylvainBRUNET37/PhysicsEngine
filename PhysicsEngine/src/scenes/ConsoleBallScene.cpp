@@ -22,7 +22,7 @@ ConsoleBallScene::~ConsoleBallScene()
 		bodyInterface.DestroyBody(staticObject);
 	}
 
-	if (currentBallIndex != 0)
+	if (currentBallIndex >= 0)
 	{
 		bodyInterface.RemoveBody(currentBallId);
 		bodyInterface.DestroyBody(currentBallId);
@@ -32,7 +32,7 @@ ConsoleBallScene::~ConsoleBallScene()
 void ConsoleBallScene::Run()
 {
 	uint frameCount = 0;
-	bool wasSpacePressedLastFrame = false; // used to prevent skipping one ball
+	bool wasSpacePressedLastFrame = false; // Used to prevent skipping one ball
 
 	while (true)
 	{
@@ -52,7 +52,7 @@ void ConsoleBallScene::Run()
 		wasSpacePressedLastFrame = isSpacePressed;
 
 		if (frameCount % 30 == 0 && currentBallIndex >= 0) // 0.5s per frame if a ball has already been invoked
-			DrawObject();
+			DrawCurrentBall();
 
 		UpdatePhysics();
 		WaitBeforeNextFrame(frameStartTime);
@@ -61,7 +61,7 @@ void ConsoleBallScene::Run()
 
 void ConsoleBallScene::DeletePreviousBall() const
 {
-	if (currentBallIndex != 0) [[likely]]
+	if (currentBallIndex > 0) [[likely]]
 	{
 		auto& bodyInterface = JoltSystem::GetBodyInterface();
 
@@ -79,9 +79,9 @@ void ConsoleBallScene::SpawnNextBall()
 	bodyInterface.SetLinearVelocity(currentBallId, Vec3(0.5f, 0.0f, 0.0f));
 }
 
-void ConsoleBallScene::CreateStaticScene()
+void ConsoleBallScene::CreateStaticScene() // Create wall and sensor
 {
-	const BoxShapeSettings wallShapeSettings(Vec3(0.2f, 5.0f, 3.0f));
+		const BoxShapeSettings wallShapeSettings(Vec3(0.2f, 5.0f, 3.0f));
 
 	const ShapeSettings::ShapeResult wallShapeResult = wallShapeSettings.Create();
 	const ShapeRefC wallShape = wallShapeResult.Get();
@@ -106,7 +106,7 @@ void ConsoleBallScene::CreateStaticScene()
 	staticObjects.emplace_back(wallSensorId);
 }
 
-void ConsoleBallScene::DrawObject() const
+void ConsoleBallScene::DrawCurrentBall() const
 {
 	const RVec3 position = JoltSystem::GetBodyInterface().GetCenterOfMassPosition(currentBallId);
 	const Vec3 velocity = JoltSystem::GetBodyInterface().GetLinearVelocity(currentBallId);

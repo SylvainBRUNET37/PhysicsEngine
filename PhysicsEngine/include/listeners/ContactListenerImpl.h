@@ -3,7 +3,6 @@
 
 #include <Jolt/Physics/Collision/ContactListener.h>
 
-#include "layers/Layers.h"
 #include "systems/JoltSystem.h"
 
 class ContactListenerImpl : public JPH::ContactListener
@@ -39,34 +38,9 @@ public:
 	}
 
 private:
-	static void HandleSlowGhost(const JPH::Body& sensorBody, const JPH::Body& other)
-	{
-		if (!sensorBody.IsSensor())
-			return;
+	static void HandleSlowGhost(const JPH::Body& sensorBody, const JPH::Body& other);
 
-		if (other.GetObjectLayer() != Layers::SLOW_GHOST)
-			return;
-
-		JoltSystem::GetPostStepCallbacks().emplace_back
-		(
-			[&]
-			{
-				JoltSystem::GetBodyInterface().SetLinearVelocity(
-					other.GetID(), other.GetLinearVelocity() * 0.5f);
-			}
-		);
-	}
-
-	static void HandleIcarus(const JPH::Body& body)
-	{
-		if (body.GetObjectLayer() == Layers::ICARUS)
-		{
-			JoltSystem::GetPostStepCallbacks().emplace_back([&]
-			{
-				JoltSystem::GetBodyInterface().SetLinearVelocity(body.GetID(), JPH::Vec3(0, 0.5f, 0));
-			});
-		}
-	}
+	static void HandleIcarus(const JPH::Body& body);
 };
 
 #endif
